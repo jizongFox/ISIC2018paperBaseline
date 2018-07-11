@@ -3,6 +3,7 @@ sys.path.extend([os.path.dirname(os.getcwd())])
 from torch.utils.data import DataLoader
 from myutils.myDataLoader import ISICdata
 from myutils.myENet import Enet
+from myutils.tiramisu import FCDenseNet67
 from myutils.myLoss import  CrossEntropyLoss2d
 import torch
 from tqdm import tqdm
@@ -17,7 +18,7 @@ cuda_device = "0"
 root = "datasets/ISIC2018"
 
 class_number = 2
-lr = 1e-3
+lr = 1e-4
 weigth_decay=1e-5
 use_cuda=True
 number_workers=7

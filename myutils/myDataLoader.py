@@ -51,6 +51,7 @@ class ISICdata(Dataset):
             raise NotImplemented
         self.imgs = img_gts_list['img'].values
         self.gts = img_gts_list['label'].values
+
         assert len(self.imgs)==len(self.gts)
 
     def __getitem__(self, index):
