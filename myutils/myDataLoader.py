@@ -51,6 +51,10 @@ class ISICdata(Dataset):
             raise NotImplemented
         self.imgs = img_gts_list['img'].values
         self.gts = img_gts_list['label'].values
+        imgs = [x for x in os.listdir(os.path.join(self.root,'ISIC2018_Task1-2_Training_Input')) if x.find('jpg')>0]
+        gts = [x for x in os.listdir(os.path.join(self.root,'ISIC2018_Task1_Training_GroundTruth')) if x.find('png')>0]
+        self.imgs = [x for x in  self.imgs if x.split('/')[1] in imgs]
+        self.gts = [x for x in self.gts if x.split('/')[1].replace('_segmentation.png','.jpg') in imgs]
 
         assert len(self.imgs)==len(self.gts)
 
