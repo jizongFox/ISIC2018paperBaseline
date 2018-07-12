@@ -14,7 +14,7 @@ import platform
 import torch.backends.cudnn as cudnn
 
 
-cuda_device = "1"
+cuda_device = "0"
 os.environ['CUDA_VISIBLE_DEVICES']=cuda_device
 root = "datasets/ISIC2018"
 
@@ -112,7 +112,7 @@ def val(net, dataloader_):
     net.train()
     if highest_iou < iou_meter_val.value()[0]:
         highest_iou = iou_meter_val.value()[0]
-        torch.save(net.state_dict(), 'checkpoint/ENet_%.3f_%s.pth' %( iou_meter_val.value()[0],'equal_'+str(Equalize)))
+        torch.save(net.state_dict(), 'checkpoint/%s_%.3f_%s.pth' %( str(type(net)).split("'")[1].split('.')[-1],iou_meter_val.value()[0] ,'equal_'+str(Equalize)))
         print('The highest IOU is:%.3f'%iou_meter_val.value()[0],'Model saved.')
 
 if __name__=="__main__":
