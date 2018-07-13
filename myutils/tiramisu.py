@@ -178,7 +178,6 @@ class FCDenseNet(nn.Module):
         out = self.softmax(out)
         return out
 
-
 def FCDenseNet57(n_classes):
     return FCDenseNet(
         in_channels=3, down_blocks=(4, 4, 4, 4, 4),
