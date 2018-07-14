@@ -93,3 +93,16 @@ def showImages(board,image_batch, mask_batch,segment_batch):
     board.image(image_batch[0], 'original image')
     board.image(color_transform(mask_batch[0]), 'ground truth image')
     board.image(color_transform(segment_batch[0]), 'prediction given by the net')
+
+def int2onehot(mask):
+    batch_size = mask.shape[0]
+    nb_digits = 2
+    y_onehot = torch.zeros((batch_size,nb_digits,*mask.shape[2:]))
+    for i in range(nb_digits):
+        y_onehot[:,i] = mask==i
+    return y_onehot
+
+if __name__=="__main__":
+    mask = torch.randint(0,2,(1,1,512,512))
+    # print(mask,mask.shape)
+    mask_onehot = int2onehot(mask)
