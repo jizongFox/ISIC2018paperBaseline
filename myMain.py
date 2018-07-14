@@ -21,9 +21,9 @@ root = "datasets/ISIC2018"
 class_number = 2
 lr = 1e-4
 weigth_decay = 1e-5
-use_cuda = False
-number_workers = 2
-batch_size = 2
+use_cuda = True
+number_workers = 1
+batch_size = 1
 max_epoch = 100
 train_print_frequncy = 50
 val_print_frequncy = 10
@@ -63,8 +63,8 @@ criterion_ce = CrossEntropyLoss2d(class_weigth).cuda() if (
 criterion_bce = nn.BCELoss()
 highest_iou = -1
 
-zeros = torch.zeros((batch_size), requires_grad=False)
-ones = torch.ones((batch_size), requires_grad=False)
+zeros = torch.zeros((batch_size), requires_grad=False).cuda()
+ones = torch.ones((batch_size), requires_grad=False).cuda()
 
 def train():
     net.train()
@@ -82,19 +82,17 @@ def train():
         for i, (img, mask, _) in tqdm(enumerate(train_loader)):
             (img, mask) = (img.cuda(), mask.cuda()) if (torch.cuda.is_available() and use_cuda) else (img, mask)
             d_optimiser.zero_grad()
-            s_optimiser.zero_grad()
-            pred = net(img)
 
-            fake_score = discriminator(img, F.softmax(pred, dim=1).detach())
+            pred = net(img)
+            fake_score = discriminator(img.detach(), F.softmax(pred, dim=1).detach())
             fake_loss = criterion_bce(fake_score, zeros)
 
-            real_score = discriminator(img, int2onehot(mask))
+            real_score = discriminator(img.detach(), int2onehot(mask).cuda())
             real_loss = criterion_bce(real_score,ones)
             (real_loss + fake_loss).backward()
             d_optimiser.step()
-            # create a graph
 
-            d_optimiser.zero_grad()
+            # create a graph
             s_optimiser.zero_grad()
             pred = net(img)
             fake_score = discriminator(img, F.softmax(pred, dim=1))
