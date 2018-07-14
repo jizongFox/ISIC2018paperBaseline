@@ -99,7 +99,7 @@ def int2onehot(mask):
     nb_digits = 2
     y_onehot = torch.zeros((batch_size,nb_digits,*mask.shape[2:]))
     for i in range(nb_digits):
-        y_onehot[:,i] = mask==i
+        y_onehot[:,i] = (mask==i).squeeze()
     return y_onehot
 
 if __name__=="__main__":
