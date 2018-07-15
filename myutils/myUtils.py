@@ -1,7 +1,11 @@
 import numpy as np
 import torch
 import numpy as np,pandas as pd, matplotlib.pyplot as plt
-from PIL import Image
+from PIL import Image,ImageOps
+from torchvision import transforms
+from scipy import ndimage
+
+from scipy import misc
 
 def colormap(n):
     cmap=np.zeros([n, 3]).astype(np.uint8)
@@ -83,8 +87,7 @@ def showImages(board,image_batch, mask_batch,segment_batch):
     color_transform = Colorize()
     means = np.array([0.762824821091, 0.546326646928, 0.570878231817])
     stds = np.array([0.0985789149783, 0.0857434017536, 0.0947628491147])
-    # import ipdb
-    # ipdb.set_trace()
+
     if image_batch.min()<0:
         for i in range(3):
             image_batch[:,i,:,:]=(image_batch[:,i,:,:])*stds[i]+means[i]
@@ -101,6 +104,36 @@ def int2onehot(mask):
     for i in range(nb_digits):
         y_onehot[:,i] = (mask==i).squeeze()
     return y_onehot
+
+
+means = np.array([0.762824821091, 0.546326646928, 0.570878231817])
+stds = np.array([0.0985789149783, 0.0857434017536, 0.0947628491147])
+
+img_transform_std = transforms.Compose([
+    transforms.Resize((384,384)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=means,
+                         std=stds)
+])
+
+img_transform_equal = transforms.Compose([
+    transforms.Resize((384,384)),
+    transforms.ToTensor(),
+])
+
+def image_transformation(img_path,Equalize):
+    img = Image.open(img_path)
+    img_original = np.array(img)
+    (l,w)= img.size
+    img = ImageOps.equalize(img)
+    img = img_transform_equal(img) if Equalize else img_transform_std(img)
+    return img , (l,w), img_original
+
+def fill_in_holes(predictions):
+    predictions= ndimage.gaussian_filter(predictions,sigma=3)
+    img_fill_holes = ndimage.binary_fill_holes(predictions).astype(int)
+    return img_fill_holes
+
 
 if __name__=="__main__":
     mask = torch.randint(0,2,(1,1,512,512))
