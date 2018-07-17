@@ -45,7 +45,9 @@ net.eval()
 ## dataset
 root = '../datasets/ISIC2018'
 val_in = 'ISIC2018_Task1-2_Validation_Input'
-outdir = 'ISIC2018_Task1-2_Validation_Output'
+outdir = 'ISIC2018_Task1-2_Validation_Output_with_fillhole_Gaussin'
+if not os.path.isdir(os.path.join(root,outdir)):
+    os.mkdir(os.path.join(root,outdir))
 imgs = [x for x in os.listdir(os.path.join(root,val_in)) if x.find('jpg')>0]
 
 # imgs =[
@@ -70,7 +72,6 @@ imgs = [x for x in os.listdir(os.path.join(root,val_in)) if x.find('jpg')>0]
 #
 # imgs = [x+".jpg" for x in imgs]
 
-
 for img in tqdm(imgs):
     input_name = os.path.basename(img)
     with torch.no_grad():
@@ -81,26 +82,26 @@ for img in tqdm(imgs):
         full_prediction = dense_crf(img_orignal.astype(np.uint8), prediction_resized.astype(np.float32))
         full_prediction_1 = fill_in_holes(full_prediction)
 
-        fig1=plt.figure(1)
-        plt.clf()
-        ax0 = fig1.add_subplot(221)
-        ax0.imshow(img_orignal)
-        ax0.set_axis_off()
-        ax0.set_title('original image')
-        ax1= fig1.add_subplot(222)
-        ax1.imshow(prediction_resized)
-        ax1.set_title('output prediction')
-        ax1.set_axis_off()
-        ax3= fig1.add_subplot(223)
-        ax3.imshow(full_prediction)
-        ax3.set_title('DCF output')
-        ax3.set_axis_off()
-        ax2 = fig1.add_subplot(224)
-        ax2.imshow(full_prediction_1)
-        ax2.set_title('Gaussian filter and fill holes')
-        ax2.set_axis_off()
-        plt.show(block=False)
-        plt.pause(0.001)
+        # fig1=plt.figure(1)
+        # plt.clf()
+        # ax0 = fig1.add_subplot(221)
+        # ax0.imshow(img_orignal)
+        # ax0.set_axis_off()
+        # ax0.set_title('original image')
+        # ax1= fig1.add_subplot(222)
+        # ax1.imshow(prediction_resized)
+        # ax1.set_title('output prediction')
+        # ax1.set_axis_off()
+        # ax3= fig1.add_subplot(223)
+        # ax3.imshow(full_prediction)
+        # ax3.set_title('DCF output')
+        # ax3.set_axis_off()
+        # ax2 = fig1.add_subplot(224)
+        # ax2.imshow(full_prediction_1)
+        # ax2.set_title('Gaussian filter and fill holes')
+        # ax2.set_axis_off()
+        # plt.show(block=False)
+        # plt.pause(0.001)
         mask = Image.fromarray(np.uint8(full_prediction_1 * 255))
         mask.save(os.path.join(os.path.join(root,outdir), input_name.replace('jpg','png')), 'PNG', optimize=True, progressive=True)
 

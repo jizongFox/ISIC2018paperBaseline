@@ -4,6 +4,7 @@ import numpy as np,pandas as pd, matplotlib.pyplot as plt
 from PIL import Image,ImageOps
 from torchvision import transforms
 from scipy import ndimage
+import cv2
 
 from scipy import misc
 
@@ -130,8 +131,13 @@ def image_transformation(img_path,Equalize):
     return img , (l,w), img_original
 
 def fill_in_holes(predictions):
-    predictions= ndimage.gaussian_filter(predictions,sigma=3)
+
     img_fill_holes = ndimage.binary_fill_holes(predictions).astype(int)
+    img_fill_holes = ndimage.gaussian_filter(img_fill_holes,sigma=1)
+
+
+
+
     return img_fill_holes
 
 
