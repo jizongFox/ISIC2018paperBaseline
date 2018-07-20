@@ -16,6 +16,8 @@ import torch.nn.functional as F
 from myutils.myCrf import dense_crf
 import matplotlib.pyplot as plt
 
+from medpy.graphcut import graph_from_voxels
+from medpy.graphcut.energy_voxel import boundary_difference_linear, boundary_difference_exponential
 
 
 cuda_device = "0"
@@ -30,14 +32,13 @@ batch_size=1
 net = Enet(class_number)
 net = net.cuda() if (torch.cuda.is_available() and use_cuda) else net
 map_location=lambda storage, loc: storage
-checkpoint_name='ENet_0.841_equal_True.pth'
-
+checkpoint_name='ENet_0.815_equal_True.pth'
+net.load_state_dict(torch.load('checkpoint/'+checkpoint_name,map_location=map_location))
 Equalize = True if checkpoint_name.find('equal_True')>=0 else False
 
 if (use_cuda and torch.cuda.is_available()):
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
-net.load_state_dict(torch.load('../checkpoint/'+checkpoint_name,map_location=map_location))
 
 valdata = ISICdata(root=root,model='train',transform=True,dataAugment=False,equalize=Equalize)
 val_loader = DataLoader(valdata,batch_size=batch_size,shuffle=False,num_workers=number_workers,pin_memory=True)

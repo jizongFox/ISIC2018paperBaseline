@@ -4,10 +4,8 @@ from myutils.myENet import Enet
 import torch
 from myEvaluation import evaluate
 import argparse
-import torch.backends.cudnn as cudnn
-from tqdm import tqdm
 
-image_input_path = 'datasets/ISIC2018/ISIC2018_Task1-2_Validation_Input'
+image_input_path = 'datasets/ISIC2018/ISIC2018_Task3_Training_Input'
 
 def main(args):
     use_cuda = True
@@ -18,34 +16,33 @@ def main(args):
 
     if args.model == "enet":
         net = Enet(2).to(args.device)
-        if (use_cuda and torch.cuda.is_available()):
-            net = torch.nn.DataParallel(net)
-            cudnn.benchmark = True
-        map_location = lambda storage, loc: storage
-        net.load_state_dict(torch.load(os.path.join('checkpoint',args.checkpoint),map_location=map_location))
-    else:
-        raise NotImplemented
+        net.load_state_dict(torch.load(args.checkpoint))
+    elif args.model == "unet":
+        net = UNet(2).to(args.device)
+        net.load_state_dict(torch.load(args.checkpoint))
 
-    for img in tqdm(imgs):
+    for img in imgs:
         args.input_name=img
         evaluate(args,net)
 
 class configs:
     model = "unet"
     img_dir = image_input_path
-    checkpoint = None
+    checkpoint = "UNet_0.726.pth"
     input_name = None
-    out_dir ="datasets/ISIC2018/ISIC2018_Task1-2_Validation_Input_Mask"
-    Equalize=True
+    out_dir ="datasets/ISIC2018/ISIC2018_Task3_Training_Input_Mask"
+    kernel_size= 25
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Semantic Segmentation Mask Generation')
     parser.add_argument('--model', default='enet', type=str, help='model name "enet" or "unet".')
-    parser.add_argument('--checkpoint', required=False, default="ENet_0.841_equal_True.pth", type=str, help='checkpoint_path')
+    parser.add_argument('--checkpoint', required=True, type=str, help='checkpoint_path')
+    parser.add_argument('--kernel_size', type=int, default=25, help='dilation size')
     ar = parser.parse_args()
     args = configs()
     args.model = ar.model
     args.checkpoint = ar.checkpoint
+    args.kernel_size= ar.kernel_size
     main(args)
 
 
