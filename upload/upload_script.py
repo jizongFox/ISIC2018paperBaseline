@@ -1,6 +1,7 @@
 #coding=utf8
 from selenium import webdriver
-import time,requests,pickle
+from selenium.webdriver.common.keys import Keys
+import time,requests,pickle,os
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
@@ -14,21 +15,22 @@ HEADERS = {
 class automatic_upload(object):
     def __init__(self) -> None:
         super().__init__()
-        self.page_to_start = 'https://challenge.kitware.com/#phase/5b1c193356357d41064da2ec/submit'
+        self.page_to_start = 'https://challenge.kitware.com/#phase/5b1c193356357d41064da2ec'
         self.id = 'jizong'
         self.pw = '911005'
         self.session = requests.Session()
         self.header = HEADERS
         self.session.headers = self.header
-        self.implicitly_wait_time =30
+        self.implicitly_wait_time =5
         self.cookies_dict={}
 
 
     def slow_input(self,ele,str):
         '''减慢账号密码的输入速度'''
+        ele.send_keys(Keys.DELETE)
         for i in str:
             ele.send_keys(i)
-            time.sleep(0.2)
+            time.sleep(0.1)
 
     def get_cookies(self):
         cookies = self.driver.get_cookies()
@@ -51,7 +53,10 @@ class automatic_upload(object):
         self.driver = webdriver.Chrome()
         self.driver.implicitly_wait(self.implicitly_wait_time)
         self.driver.get(self.page_to_start)
-        time.sleep(3)
+        time.sleep(1)
+        button = self.driver.find_element_by_id('c-join-phase')
+        button.click()
+        time.sleep(1)
         id = self.driver.find_element_by_id('g-login')
         print('input login name')
         self.slow_input(id,self.id)
@@ -62,18 +67,51 @@ class automatic_upload(object):
         print('login')
         login = self.driver.find_element_by_id('g-login-button')
         login.click()
-        # time.sleep(3)
-        self.get_cookies()
-        self.driver.close()
+        print()
+        time.sleep(2)
+        button = self.driver.find_element_by_id('c-submit-phase-dataset')
+        button.click()
+
+
+        self.upload()
 
     def upload(self):
-        self.driver = webdriver.Chrome()
-        # self.set_cookies()
-        self.driver.get(self.page_to_start)
+        time.sleep(5)
+        print('descriptor')
+        try:
+            description = self.driver.find_element_by_xpath('//*[@id="g-app-body-container"]/div[2]/div[2]/div[1]/div/select')
+        except Exception as e:
+            description = self.driver.find_element_by_xpath('//*[@id="g-app-body-container"]/div[2]/div[2]/div[1]/div/input')
+          #  '//*[@id="g-app-body-container"]/div[2]/div[2]/div[1]/div/select'
+
+        self.slow_input(description,'111')
+        # description.send_keys('1111')
+        teamname = self.driver.find_element_by_class_name('c-submission-organization-input')
+        self.slow_input(teamname,'dahuli')
+        # teamname.send_keys('dahuli')
+        url = self.driver.find_element_by_class_name('c-submission-organization-url-input')
+        self.slow_input(url,'dahuli.com')
+        # url.send_keys('www.dahuli.com')
+        arxiv = self.driver.find_element_by_class_name('c-submission-documentation-url-input')
+        # arxiv.send_keys('www.arxiv.dahuli.com')
+        self.slow_input(arxiv,'www.arxiv.dahuli.com')
+        externaldata = self.driver.find_element_by_xpath('//*[@id="g-app-body-container"]/div[2]/div[2]/label[2]/input')
+        time.sleep(0.5)
+        externaldata.click()
+
+        ## agreement
+        agree = self.driver.find_element_by_xpath('//*[@id="g-app-body-container"]/div[2]/div[2]/div[5]/label/input')
+        time.sleep(0.2)
+        agree.click()
+
+        file = self.driver.find_element_by_id('g-files')
+        file.send_keys(os.path.join(os.getcwd(),'ISIC_Segmenation_dataset_split.zip'))
         time.sleep(1)
-        self.set_cookies()
-        self.driver.get(self.page_to_start)
-        time.sleep(10)
+        submit = self.driver.find_element_by_xpath('//*[@id="g-upload-form"]/div[8]/button')
+        submit.click()
+        time.sleep(100)
+
+
 
 
 
@@ -82,5 +120,3 @@ class automatic_upload(object):
 if __name__=="__main__":
     a = automatic_upload()
     a.fill_login()
-    time.sleep(2)
-    a.upload()
