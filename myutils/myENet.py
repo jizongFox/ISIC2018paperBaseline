@@ -134,7 +134,7 @@ class BottleNeck(nn.Module):
                                             self.output_channels - self.input_channels,
                                             input_shape[2] // 2,
                                             input_shape[3] // 2).zero_(), requires_grad=False)
-                if (torch.cuda.is_available):
+                if (torch.cuda.is_available()):
                     pad = pad.cuda(0)
                 main = torch.cat((main, pad), 1)
         elif self.upsampling:
