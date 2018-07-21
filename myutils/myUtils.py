@@ -152,3 +152,11 @@ def calculate_iou(predicted_mask, mask):
         union = pred_inds.sum() + target_inds.sum() - intersection
         iou.append(intersection/union)
     return iou
+
+def dilation(predicted_mask,structure=1):
+    struct1 = ndimage.generate_binary_structure(2, 1)
+    struct2 = ndimage.generate_binary_structure(2, 2)
+    if structure==1:
+        return ndimage.binary_dilation(predicted_mask, structure=struct1).astype(predicted_mask.dtype)
+    else:
+        return ndimage.binary_dilation(predicted_mask, structure=struct2).astype(predicted_mask.dtype)

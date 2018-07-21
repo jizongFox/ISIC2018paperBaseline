@@ -115,7 +115,7 @@ class automatic_upload(object):
         agree.click()
 
         file = self.driver.find_element_by_id('g-files')
-        file.send_keys(os.path.join(os.getcwd(), 'val.zip'))
+        file.send_keys(self.filename)
         time.sleep(1)
         submit = self.driver.find_element_by_xpath('//*[@id="g-upload-form"]/div[8]/button')
         submit.click()
@@ -133,11 +133,11 @@ class automatic_upload(object):
         excel = pd.read_csv(StringIO(excel), )
         excel['image_id']=excel.iloc[:,0].apply(lambda x:x.split(' ')[0])
         excel['image_score'] = excel.iloc[:,0].apply(lambda x:x.split(' ')[1])
-        excel.to_csv(self.filename.replace('zip','csv'),encoding='utf8')
+        excel.to_csv(os.path.join(os.path.dirname(self.filename),os.path.basename(self.filename.split('.zip')[0]),os.path.basename(self.filename).replace('zip','csv')),encoding='utf8')
         self.driver.close()
 
 
 if __name__ == "__main__":
-    a = automatic_upload('val.zip')
+    a = automatic_upload('/home/jizong/WorkSpace/ISIC2018paperBaseline/datasets/ISIC2018/Development_set_Output_Mask.zip')
     a.fill_login()
     a.get_excel()
