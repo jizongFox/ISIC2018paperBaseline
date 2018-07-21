@@ -19,14 +19,14 @@ import shutil
 cuda_device = "0"
 # method ='baseline'
 # method = 'fillholes'
-method = 'gaussian'
+# method = 'gaussian'
 # method = 'crf'
 # method = 'dilation'
-# method ='crf+dilation'
+method ='crf+dilation'
 
 root = '../datasets/ISIC2018'
 val_in = 'ISIC2018_Task1-2_Validation_Input'
-outdir = 'test1'
+outdir = 'crf+dilation'
 
 class_number = 2
 use_cuda = True
@@ -104,7 +104,7 @@ for img in tqdm(imgs):
 
         if method=='baseline':
             final_prediction = (prediction_resized > 0.5).astype(np.int_)
-            assert final_prediction.shape == groundtruth_mask.shape
+            # assert final_prediction.shape == groundtruth_mask.shape
             # mean iou: 0.8709129795448528
             # foreground iou: 0.8050291207321197
 
