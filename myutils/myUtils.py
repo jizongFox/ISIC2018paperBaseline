@@ -123,7 +123,7 @@ def image_transformation(img_path, Equalize):
     img = Image.open(img_path)
     img_original = np.array(img)
     (l, w) = img.size
-    img = ImageOps.equalize(img)
+    img = ImageOps.equalize(img) if Equalize else img
     img = img_transform_equal(img) if Equalize else img_transform_std(img)
     return img, (l, w), img_original
 
@@ -133,7 +133,6 @@ def fill_in_holes(predictions):
     for i in range(5, 3, -1):
         img_fill_holes = ndimage.binary_fill_holes(predictions, structure=np.ones((i, i))).astype(int)
     img_fill_holes = ndimage.binary_fill_holes(img_fill_holes).astype(int)
-
 
     return img_fill_holes
 

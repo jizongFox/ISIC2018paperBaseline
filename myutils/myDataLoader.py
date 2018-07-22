@@ -79,6 +79,18 @@ class ISICdata(Dataset):
 
     def augment(self, img, mask):
         if random.random() > 0.2:
+            img = ImageOps.flip(img)
+            mask = ImageOps.flip(mask)
+
+        if random.random() > 0.5:
+            img = ImageOps.mirror(img)
+            mask = ImageOps.mirror(mask)
+
+        if random.random() > 0.2:
+            angle = random.random() * 90 - 45
+            img = img.rotate(angle)
+            mask = mask.rotate(angle)
+        if random.random() > 0.2:
             (w, h) = img.size
             (w_, h_) = mask.size
             assert (w==w_ and h==h_),'The size should be the same.'
@@ -91,19 +103,6 @@ class ISICdata(Dataset):
             y_pos = int(random.uniform(0, start_y))
             img = img.crop((x_pos, y_pos, x_pos + W, y_pos + H))
             mask = mask.crop((x_pos, y_pos, x_pos + W, y_pos + H))
-
-        if random.random() > 0.2:
-            img = ImageOps.flip(img)
-            mask = ImageOps.flip(mask)
-
-        if random.random() > 0.2:
-            img = ImageOps.mirror(img)
-            mask = ImageOps.mirror(mask)
-
-        if random.random() > 0.2:
-            angle = random.random() * 90 - 45
-            img = img.rotate(angle)
-            mask = mask.rotate(angle)
 
         return img, mask
 
