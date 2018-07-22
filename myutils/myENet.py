@@ -143,7 +143,7 @@ class BottleNeck(nn.Module):
             main = input
 
         other_net = nn.Sequential(self.block1x1_1, self.middle_block,
-                                  self.block1x1_2)
+                                  self.block1x1_2).cuda()
         other = other_net(input)
         output = F.relu(main + other)
         if (self.downsampling):
@@ -184,6 +184,20 @@ class Encoder(nn.Module):
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=8))
             layers.append(BottleNeck(128, 128, asymmetric=True))
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=16))
+
+            ##by dahli
+            # layers.append(BottleNeck(128, 128))
+            # layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=8))
+            # layers.append(BottleNeck(128, 128, asymmetric=True))
+            # layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=4))
+            # ##
+            # layers.append(BottleNeck(128, 128))
+            # layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=2))
+            # layers.append(BottleNeck(128, 128, asymmetric=True))
+            # layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=1))
+
+
+
         # only uses for training
         if (train):
             layers.append(nn.Conv2d(128, num_classes, 1))

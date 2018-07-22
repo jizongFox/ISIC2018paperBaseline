@@ -30,7 +30,7 @@ val_print_frequncy = 3
 ## visualization
 board_train_image = Dashboard(server='http://localhost',env="image_train")
 board_val_image = Dashboard(server='http://localhost',env="image_val")
-board_loss = Dashboard(server='http://localhost',env="loss")
+board_losshboard(server='http://localhost',env="loss")
 
 Equalize = False
 ## data

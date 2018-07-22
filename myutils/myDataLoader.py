@@ -1,4 +1,4 @@
-from PIL import Image, ImageEnhance,ImageOps
+from PIL import Image, ImageEnhance,ImageOps,ImageFilter
 import numpy as np
 import random
 import os,matplotlib.pyplot as plt
@@ -78,11 +78,12 @@ class ISICdata(Dataset):
         return img.float(), gt.long(), (img_path,gt_path)
 
     def augment(self, img, mask):
+
         if random.random() > 0.2:
             (w, h) = img.size
             (w_, h_) = mask.size
             assert (w==w_ and h==h_),'The size should be the same.'
-            crop = random.uniform(0.88, 1)
+            crop = random.uniform(0.45, 0.75)
             W = int(crop * w)
             H = int(crop * h)
             start_x = w - W
@@ -104,6 +105,14 @@ class ISICdata(Dataset):
             angle = random.random() * 90 - 45
             img = img.rotate(angle)
             mask = mask.rotate(angle)
+        if random.random() > 0.8 :
+            img = img.filter(ImageFilter.GaussianBlur(2))
+
+        if random.random()>0.8:
+            img = ImageEnhance.Contrast(img).enhance(1)
+
+        if random.random()>0.8:
+            img = ImageEnhance.Brightness(img).enhance(1)
 
         return img, mask
 
