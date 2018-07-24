@@ -98,7 +98,8 @@ for img in tqdm(imgs):
             groundtruth_mask = np.array(Image.open(os.path.join(root, gt)).convert('L'))/255.0
         except:
             pass
-
+        img[img!=1]=1
+        img = img.float()
         prediction = F.softmax(net(img.unsqueeze(0).to("cuda")), dim=1)[0, 1].cpu().data.numpy()
         prediction_resized = np.array(Image.fromarray(np.uint8(prediction * 255)).resize((l, h))) / 255.0
 
