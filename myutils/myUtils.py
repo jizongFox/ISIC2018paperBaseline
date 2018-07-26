@@ -3,6 +3,7 @@ import torch
 from PIL import Image, ImageOps
 from scipy import ndimage
 from torchvision import transforms
+import matplotlib.pyplot as plt
 
 
 def colormap(n):
@@ -129,10 +130,19 @@ def image_transformation(img_path, Equalize):
 
 
 def fill_in_holes(predictions):
+    struct2 = ndimage.generate_binary_structure(2, 2)
     img_fill_holes = predictions
-    for i in range(5, 3, -1):
-        img_fill_holes = ndimage.binary_fill_holes(predictions, structure=np.ones((i, i))).astype(int)
+    for i in range(25, 3, -1):
+        img_fill_holes = ndimage.binary_fill_holes(img_fill_holes, structure=np.ones((i, i))).astype(int)
+        # img_fill_holes = ndimage.gaussian_filter(img_fill_holes, sigma=1).astype(int)
+        img_fill_holes = ndimage.binary_dilation(img_fill_holes, structure=struct2).astype(img_fill_holes.dtype)
     img_fill_holes = ndimage.binary_fill_holes(img_fill_holes).astype(int)
+    img_fill_holes = ndimage.gaussian_filter(img_fill_holes, sigma=1).astype(int)
+
+    plt.imshow(img_fill_holes)
+    plt.show()
+    plt.imshow(predictions)
+    plt.show()
 
     return img_fill_holes
 

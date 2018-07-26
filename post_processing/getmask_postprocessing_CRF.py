@@ -18,15 +18,17 @@ import shutil
 
 cuda_device = "0"
 # method ='baseline'
-# method = 'fillholes'
+method = 'fillholes'
 # method = 'gaussian'
 # method = 'crf'
 # method = 'dilation'
-method ='crf+dilation'
+# method ='crf+dilation'
 
 root = '../datasets/ISIC2018'
 val_in = 'ISIC2018_Task1-2_Validation_Input'
-outdir = 'crf+dilation'
+outdir = 'jizong_'+method
+
+sigma = 2
 
 class_number = 2
 use_cuda = True
@@ -36,9 +38,11 @@ batch_size = 1
 net = Enet(class_number)
 net = net.cuda() if (torch.cuda.is_available() and use_cuda) else net
 map_location = lambda storage, loc: storage
-checkpoint_name = 'ENet_0.841_equal_True.pth'
+checkpoint_name = 'ENet_0.837_equal_False.pth'
 
 Equalize = True if checkpoint_name.find('equal_True') >= 0 else False
+# Equalize =False
+outdir += '_'+str(Equalize)+'_sigma_'+str(sigma)
 
 if (use_cuda and torch.cuda.is_available()):
     net = torch.nn.DataParallel(net)
@@ -88,7 +92,7 @@ def plot_graphs(image, groundtruth, raw_prediction, final_prediction):
     ax4.set_axis_off()
 
 
-
+print(method)
 
 for img in tqdm(imgs):
     input_name = os.path.basename(img)
@@ -111,11 +115,12 @@ for img in tqdm(imgs):
         if method=="fillholes":
             prediction_resized = (prediction_resized > 0.5).astype(np.int_)
             final_prediction = fill_in_holes(prediction_resized)
+
             # meaniou: 0.8709865610158177
             # foreground iou: 0.8051885879455437
         if method == 'gaussian':
             prediction_resized = (prediction_resized > 0.5).astype(np.int_)
-            final_prediction = ndimage.gaussian_filter(prediction_resized, sigma=5).astype(int)
+            final_prediction = ndimage.gaussian_filter(prediction_resized, sigma=sigma).astype(int)
             # sigma ==1:
             # mean iou: 0.8673420208414067
             # foreground iou: 0.7982967857510189
