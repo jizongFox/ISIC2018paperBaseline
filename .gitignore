@@ -54,3 +54,8 @@ gradle/
 gradlew
 gradlew.bat
 unused.txt
+__pycache__/
+datasets/
+myutils/__pycache__/
+upload/__pycache__/
+
